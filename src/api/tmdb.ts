@@ -9,10 +9,7 @@ async function get<TBody>(relativeUrl: string): Promise<TBody> {
     },
   };
 
-  const response = await fetch(
-    `${configuration.apiUrl}/3${relativeUrl}`,
-    options
-  );
+  const response = await fetch(`${configuration.apiUrl}/3${relativeUrl}`, options);
   const json: TBody = await response.json();
   return json;
 }
@@ -22,13 +19,20 @@ export interface MovieDetails {
   title: string;
   popularity: number;
   overview: string;
-  backdrop_path: string;
+  backdrop_path?: string;
   image?: string;
 }
 
 interface PageResponse<TResult> {
   page: number;
   results: TResult[];
+  total_pages: number;
+}
+
+interface PageDetails<TResult> {
+  page: number;
+  results: TResult[];
+  totalPages: number;
 }
 
 interface Confifuration {
@@ -41,10 +45,13 @@ export const client = {
   async getConfiguration() {
     return get<Confifuration>("/configuration");
   },
-  async getNowPlaying(): Promise<MovieDetails[]> {
-    const response = await get<PageResponse<MovieDetails>>(
-      "/movie/now_playing?page=1"
-    );
-    return response.results;
+  async getNowPlaying(page: number = 1): Promise<PageDetails<MovieDetails>> {
+    const response = await get<PageResponse<MovieDetails>>(`/movie/now_playing?page=${page}`);
+
+    return {
+      results: response.results,
+      page: response.page,
+      totalPages: response.total_pages,
+    };
   },
 };
