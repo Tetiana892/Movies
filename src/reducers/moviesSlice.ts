@@ -1,6 +1,6 @@
 import { ActionWhithPayload, createReducer } from "../redux/utils";
 import { AppThunk } from "../store";
-import { client } from "../api/tmdb";
+import { MoviesFilters, client } from "../api/tmdb";
 
 export interface Movie {
   id: number;
@@ -33,23 +33,27 @@ const moviesLoading = () => ({
   type: "movies/loading",
 });
 
-export function fetchNextPage(): AppThunk<Promise<void>> {
+export const resetMovies = () => ({
+  type: "movies/reset",
+});
+
+export function fetchNextPage(filters: MoviesFilters = {}): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
     const nextPage = getState().movies.page + 1;
-    dispatch(fetchPage(nextPage));
+    dispatch(fetchPage(nextPage, filters));
   };
 }
 
-function fetchPage(page: number): AppThunk<Promise<void>> {
+function fetchPage(page: number, filters: MoviesFilters): AppThunk<Promise<void>> {
   return async (dispatch) => {
     dispatch(moviesLoading());
 
     try {
       // const config = await client.getConfiguration();
       // const imageUrl = config.images.base_url;
-      const nowPlaing = await client.getNowPlaying(page);
+      const moviesResponse = await client.getMovies(page, filters);
 
-      const mappedResults: Movie[] = nowPlaing.results.map((m) => ({
+      const mappedResults: Movie[] = moviesResponse.results.map((m) => ({
         id: m.id,
         title: m.title,
         overview: m.overview,
@@ -57,7 +61,7 @@ function fetchPage(page: number): AppThunk<Promise<void>> {
         // image: m.backdrop_path ? `${imageUrl}w780${m.backdrop_path}` : undefined,
       }));
 
-      const hasMorePages = nowPlaing.page < nowPlaing.totalPages;
+      const hasMorePages = moviesResponse.page < moviesResponse.totalPages;
 
       dispatch(moviesLoaded(mappedResults, page, hasMorePages));
     } catch (error) {
@@ -84,6 +88,9 @@ const moviesReducer = createReducer<MovieState>(initialState, {
       ...state,
       loading: true,
     };
+  },
+  "movies/reset": (state) => {
+    return { ...initialState };
   },
 });
 

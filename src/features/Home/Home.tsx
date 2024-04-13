@@ -32,8 +32,10 @@ export default function Home() {
         component="footer"
         sx={{ borderTop: (theme) => `1px solid ${theme.palette.divider}`, mt: 8, py: [3, 6] }}
       >
-        Copyright <Copyright />
-        <Typography>The Movies 2024</Typography>
+        <Typography align="center" color="text.secondary" sx={{ pt: 4 }} paragraph>
+          Copyright <Copyright />
+          The Movies 2024
+        </Typography>
       </Container>
     </Box>
   );
