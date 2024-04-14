@@ -1,6 +1,6 @@
-import { ActionWhithPayload, createReducer } from "../redux/utils";
-import { AppThunk } from "../store";
-import { MoviesFilters, client } from "../api/tmdb";
+import { ActionWhithPayload, createReducer } from "../../redux/utils";
+import { AppThunk } from "../../store";
+import { MoviesFilters, client } from "../../api/tmdb";
 
 export interface Movie {
   id: number;
@@ -49,8 +49,8 @@ function fetchPage(page: number, filters: MoviesFilters): AppThunk<Promise<void>
     dispatch(moviesLoading());
 
     try {
-      // const config = await client.getConfiguration();
-      // const imageUrl = config.images.base_url;
+      const config = await client.getConfiguration();
+      const imageUrl = config.images.base_url;
       const moviesResponse = await client.getMovies(page, filters);
 
       const mappedResults: Movie[] = moviesResponse.results.map((m) => ({
@@ -58,7 +58,7 @@ function fetchPage(page: number, filters: MoviesFilters): AppThunk<Promise<void>
         title: m.title,
         overview: m.overview,
         popularity: m.popularity,
-        // image: m.backdrop_path ? `${imageUrl}w780${m.backdrop_path}` : undefined,
+        image: m.backdrop_path ? `${imageUrl}w780${m.backdrop_path}` : undefined,
       }));
 
       const hasMorePages = moviesResponse.page < moviesResponse.totalPages;
