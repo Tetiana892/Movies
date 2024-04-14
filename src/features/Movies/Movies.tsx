@@ -5,8 +5,12 @@ import { Grid, LinearProgress, Typography } from "@mui/material";
 import { AuthContext, anonymousUser } from "../../AuthContext";
 import { useIntersectionObserver } from "../../hooks/useIntesectionObserver";
 import { MoviesFilter } from "./MoviesFilter";
-import { MoviesQuery, useGetConfigurationQuery, useGetMoviesQuery } from "../../services/tmdb";
-import { MoviesFilters } from "../../api/tmdb";
+import {
+  MoviesQuery,
+  useGetConfigurationQuery,
+  useGetMoviesQuery,
+  MoviesFilters,
+} from "../../services/tmdb";
 
 const initialQuery: MoviesQuery = {
   page: 1,
@@ -22,8 +26,8 @@ export default function Movies() {
   const movies = data?.results ?? [];
   const hasMorePages = data?.hasMorePages;
 
-  function formatImageUrl(path?: string) {
-    return path && configuration ? `${configuration?.images.base_url}w780${path}` : undefined;
+  function formatImageUrl(path?: string, configuration?: any) {
+    return path && configuration ? `${configuration.images.base_url}w780${path}` : undefined;
   }
 
   const { user } = useContext(AuthContext);
@@ -63,7 +67,7 @@ export default function Movies() {
       <Grid item xs={12}>
         <Container sx={{ py: 8 }} maxWidth="lg">
           {!isFetching && !movies.length && (
-            <Typography variant="h6">No movies were found that mach your qery.</Typography>
+            <Typography variant="h6">No movies were found that mach your query.</Typography>
           )}
           <Grid container spacing={4}>
             {movies.map((m, i) => (
@@ -74,7 +78,7 @@ export default function Movies() {
                   title={m.title}
                   overview={m.overview}
                   popularity={m.popularity}
-                  image={formatImageUrl(m.backdrop_path)}
+                  image={formatImageUrl(m.backdrop_path, configuration)}
                   enableUserActions={loggedIn}
                   onAddFavorite={handlerAddToFavorite}
                 />

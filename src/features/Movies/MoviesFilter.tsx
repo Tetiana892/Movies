@@ -13,17 +13,16 @@ import {
   debounce,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { KeywordsItem } from "../../api/tmdb";
 import { useMemo, useState } from "react";
 
-import { useGetGenresQuery, useGetKeywordsQuery } from "../../services/tmdb";
+import { KeywordsItem, useGetGenresQuery, useGetKeywordsQuery } from "../../services/tmdb";
 
 export interface Filters {
   keywords: KeywordsItem[];
   genres: number[];
 }
 
-interface MoviesFilterProps {
+export interface MoviesFilterProps {
   onApply(filters: Filters): void;
 }
 
